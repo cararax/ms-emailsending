@@ -1,4 +1,4 @@
-package xyz.carara.msemail.dtos;
+package xyz.carara.msemail.adapters.inbound.dtos;
 
 import lombok.Data;
 
@@ -6,7 +6,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
 @Data
-public class EmailDTO {
+public class EmailDto {
+
     @NotBlank
     private String ownerRef;
     @NotBlank

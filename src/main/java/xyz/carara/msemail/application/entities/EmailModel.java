@@ -1,7 +1,7 @@
-package xyz.carara.msemail.models;
+package xyz.carara.msemail.application.entities;
 
 import lombok.Data;
-import xyz.carara.msemail.enums.StatusEmail;
+import xyz.carara.msemail.application.entities.enums.StatusEmail;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,7 +21,7 @@ public class EmailModel implements Serializable {
     private String emailFrom;
     private String emailTo;
     private String subject;
-    @Column(columnDefinition = "TEXT")  //para inserir textos maiores 255 chars do varchar
+    @Column(columnDefinition = "TEXT")
     private String text;
     private LocalDateTime sendDateEmail;
     private StatusEmail statusEmail;

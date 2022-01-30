@@ -1,30 +1,35 @@
-package xyz.carara.msemail.services;
+package xyz.carara.msemail.application.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
-import xyz.carara.msemail.enums.StatusEmail;
-import xyz.carara.msemail.models.EmailModel;
-import xyz.carara.msemail.repositories.EmailRepository;
+import xyz.carara.msemail.application.entities.EmailModel;
+import xyz.carara.msemail.application.entities.enums.StatusEmail;
+import xyz.carara.msemail.application.ports.EmailRepository;
+import xyz.carara.msemail.application.ports.EmailService;
+
 
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 
-@Service
-public class EmailService {
+public class EmailServiceImpl implements EmailService {
 
-    @Autowired
-    EmailRepository emailRepository;
+    private final EmailRepository emailRepository;
 
-    @Autowired
-    private JavaMailSender emailSender;
+    private final JavaMailSender emailSender;
 
+    public EmailServiceImpl(final EmailRepository emailRepository, final JavaMailSender emailSender) {
+        this.emailRepository = emailRepository;
+        this.emailSender = emailSender;
+    }
+
+    @Override
     public EmailModel sendEmail(EmailModel emailModel) {
         emailModel.setSendDateEmail(LocalDateTime.now());
-        try {
+        try{
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(emailModel.getEmailFrom());
             message.setTo(emailModel.getEmailTo());
@@ -33,14 +38,21 @@ public class EmailService {
             emailSender.send(message);
 
             emailModel.setStatusEmail(StatusEmail.SENT);
-        } catch (MailException e) {
+        } catch (MailException e){
             emailModel.setStatusEmail(StatusEmail.ERROR);
         } finally {
             return emailRepository.save(emailModel);
         }
     }
 
+    @Override
     public Page<EmailModel> findAll(Pageable pageable) {
         return  emailRepository.findAll(pageable);
     }
+
+    @Override
+    public Optional<EmailModel> findById(UUID emailId) {
+        return emailRepository.findById(emailId);
+    }
 }
+
