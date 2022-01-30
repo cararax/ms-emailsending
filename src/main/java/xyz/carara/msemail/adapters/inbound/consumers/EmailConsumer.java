@@ -5,21 +5,21 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
-import xyz.carara.msemail.adapters.inbound.dtos.EmailDto;
-import xyz.carara.msemail.application.ports.EmailService;
-import xyz.carara.msemail.application.entities.EmailModel;
+import xyz.carara.msemail.adapters.dtos.EmailDto;
+import xyz.carara.msemail.application.domain.Email;
+import xyz.carara.msemail.application.ports.EmailServicePort;
 
 @Component
 public class EmailConsumer {
 
     @Autowired
-    EmailService emailService;
+    EmailServicePort emailServicePort;
 
     @RabbitListener(queues = "${spring.rabbitmq.queue}")
     public void listen(@Payload EmailDto emailDto) {
-        EmailModel emailModel = new EmailModel();
-        BeanUtils.copyProperties(emailDto, emailModel);
-        emailService.sendEmail(emailModel);
-        System.out.println("Email Status: " + emailModel.getStatusEmail().toString());
+        Email email = new Email();
+        BeanUtils.copyProperties(emailDto, email);
+        emailServicePort.sendEmail(email);
+        System.out.println("Email Status: " + email.getStatusEmail().toString());
     }
 }

@@ -1,11 +1,12 @@
 package xyz.carara.msemail.adapters.configuration;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.JavaMailSender;
 import xyz.carara.msemail.MsEmailApplication;
-import xyz.carara.msemail.application.ports.EmailRepository;
+import xyz.carara.msemail.application.ports.EmailRepositoryPort;
+import xyz.carara.msemail.application.ports.SendEmailServicePort;
 import xyz.carara.msemail.application.services.EmailServiceImpl;
 
 @Configuration
@@ -13,7 +14,12 @@ import xyz.carara.msemail.application.services.EmailServiceImpl;
 public class BeanConfiguration {
 
     @Bean
-    EmailServiceImpl emailServiceImpl(EmailRepository repository, JavaMailSender emailSender) {
-        return new EmailServiceImpl(repository, emailSender);
+    EmailServiceImpl emailServiceImpl(EmailRepositoryPort repository, SendEmailServicePort sendEmailServicePort) {
+        return new EmailServiceImpl(repository, sendEmailServicePort);
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 }

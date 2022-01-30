@@ -1,7 +1,7 @@
-package xyz.carara.msemail.application.entities;
+package xyz.carara.msemail.adapters.outbound.presistence.entities;
 
 import lombok.Data;
-import xyz.carara.msemail.application.entities.enums.StatusEmail;
+import xyz.carara.msemail.application.domain.enums.StatusEmail;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "TB_EMAIL")
-public class EmailModel implements Serializable {
+public class EmailEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id

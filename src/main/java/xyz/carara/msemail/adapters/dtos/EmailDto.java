@@ -1,4 +1,4 @@
-package xyz.carara.msemail.adapters.inbound.dtos;
+package xyz.carara.msemail.adapters.dtos;
 
 import lombok.Data;
 

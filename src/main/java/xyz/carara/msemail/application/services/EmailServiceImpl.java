@@ -1,58 +1,58 @@
 package xyz.carara.msemail.application.services;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import xyz.carara.msemail.application.entities.EmailModel;
-import xyz.carara.msemail.application.entities.enums.StatusEmail;
-import xyz.carara.msemail.application.ports.EmailRepository;
-import xyz.carara.msemail.application.ports.EmailService;
+
+import xyz.carara.msemail.application.domain.Email;
+import xyz.carara.msemail.application.domain.PageInfo;
+import xyz.carara.msemail.application.domain.enums.StatusEmail;
+import xyz.carara.msemail.application.ports.EmailRepositoryPort;
+import xyz.carara.msemail.application.ports.EmailServicePort;
+import xyz.carara.msemail.application.ports.SendEmailServicePort;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class EmailServiceImpl implements EmailService {
 
-    private final EmailRepository emailRepository;
+public class EmailServiceImpl implements EmailServicePort {
 
-    private final JavaMailSender emailSender;
+    private final EmailRepositoryPort emailRepositoryPort;
+    private final SendEmailServicePort sendEmailServicePort;
 
-    public EmailServiceImpl(final EmailRepository emailRepository, final JavaMailSender emailSender) {
-        this.emailRepository = emailRepository;
-        this.emailSender = emailSender;
+    public EmailServiceImpl(final EmailRepositoryPort emailRepositoryPort, final SendEmailServicePort sendEmailServicePort) {
+        this.emailRepositoryPort = emailRepositoryPort;
+        this.sendEmailServicePort = sendEmailServicePort;
     }
 
     @Override
-    public EmailModel sendEmail(EmailModel emailModel) {
-        emailModel.setSendDateEmail(LocalDateTime.now());
+    public Email sendEmail(Email email) {
+        email.setSendDateEmail(LocalDateTime.now());
         try{
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setFrom(emailModel.getEmailFrom());
-            message.setTo(emailModel.getEmailTo());
-            message.setSubject(emailModel.getSubject());
-            message.setText(emailModel.getText());
-            emailSender.send(message);
-
-            emailModel.setStatusEmail(StatusEmail.SENT);
-        } catch (MailException e){
-            emailModel.setStatusEmail(StatusEmail.ERROR);
+            sendEmailServicePort.sendEmailSmtp(email);
+            email.setStatusEmail(StatusEmail.SENT);
+        } catch (Exception e){
+            email.setStatusEmail(StatusEmail.ERROR);
         } finally {
-            return emailRepository.save(emailModel);
+            return save(email);
         }
     }
 
     @Override
-    public Page<EmailModel> findAll(Pageable pageable) {
-        return  emailRepository.findAll(pageable);
+    public List<Email> findAll(PageInfo pageInfo) {
+        //inserir manipulação de dados/regras
+        return  emailRepositoryPort.findAll(pageInfo);
     }
 
     @Override
-    public Optional<EmailModel> findById(UUID emailId) {
-        return emailRepository.findById(emailId);
+    public Optional<Email> findById(UUID emailId) {
+        //inserir manipulação de dados/regras
+        return emailRepositoryPort.findById(emailId);
+    }
+
+    @Override
+    public Email save(Email email) {
+        return emailRepositoryPort.save(email);
     }
 }
 
